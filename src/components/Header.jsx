@@ -1,6 +1,8 @@
 import React from 'react';
 
 export default function Header({
+  viewMode,
+  setViewMode,
   lastRealMatchDate,
   loadRealResults,
   simulateRandomly,
@@ -27,33 +29,67 @@ export default function Header({
           104 Partidos · 48 Equipos · Primer Mundial de 48 Selecciones
         </p>
 
-        {/* Quick Actions Panel */}
-        <div className="mt-8 flex flex-wrap gap-3 justify-center">
+        {/* Mode Selector Segmented Control */}
+        <div className="mt-8 inline-flex p-1 rounded-xl bg-slate-950/80 border border-slate-800/80 shadow-lg backdrop-blur-sm">
           <button
-            onClick={loadRealResults}
-            className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
+            onClick={() => setViewMode('official')}
+            className={`px-6 py-2 text-xs md:text-sm font-semibold rounded-lg transition-all duration-300 flex items-center gap-1.5 ${
+              viewMode === 'official'
+                ? 'bg-emerald-600 text-slate-50 shadow-md font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            📅 Cargar Resultados Reales {lastRealMatchDate ? `(${lastRealMatchDate})` : ''}
+            📊 Resultados Reales
           </button>
           <button
-            onClick={simulateRandomly}
-            className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-purple-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
+            onClick={() => setViewMode('simulation')}
+            className={`px-6 py-2 text-xs md:text-sm font-semibold rounded-lg transition-all duration-300 flex items-center gap-1.5 ${
+              viewMode === 'simulation'
+                ? 'bg-purple-600 text-slate-50 shadow-md font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            🎲 Simular Grupos Aleatoriamente
-          </button>
-          <button
-            onClick={sharePredictions}
-            className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-50 font-bold transition duration-200 shadow-md shadow-emerald-950/20 flex items-center gap-2"
-          >
-            🔗 Compartir Pronósticos
-          </button>
-          <button
-            onClick={resetScores}
-            className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-900 hover:text-rose-400 text-slate-400 hover:bg-rose-950/20 transition duration-200"
-          >
-            Resetear
+            🎲 Mi Simulación
           </button>
         </div>
+
+        {/* Contextual Action Panels */}
+        {viewMode === 'official' ? (
+          <div className="mt-6 max-w-xl mx-auto px-4 py-3 rounded-xl bg-emerald-950/10 border border-emerald-900/30 text-[11px] md:text-xs text-emerald-400 font-medium flex items-center justify-center gap-2">
+            <span>ℹ️</span>
+            <span>
+              Estás viendo los <strong>Resultados Reales</strong> oficiales del torneo. Los partidos jugados están bloqueados y los futuros se actualizarán automáticamente.
+            </span>
+          </div>
+        ) : (
+          <div className="mt-8 flex flex-wrap gap-3 justify-center">
+            <button
+              onClick={loadRealResults}
+              className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
+              title="Copia todos los resultados oficiales vigentes a tu simulación"
+            >
+              📅 Copiar Resultados Oficiales
+            </button>
+            <button
+              onClick={simulateRandomly}
+              className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-purple-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
+            >
+              🎲 Simular Grupos Aleatoriamente
+            </button>
+            <button
+              onClick={sharePredictions}
+              className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-purple-600 hover:bg-purple-500 text-slate-50 font-bold transition duration-200 shadow-md shadow-purple-950/20 flex items-center gap-2"
+            >
+              🔗 Compartir Pronósticos
+            </button>
+            <button
+              onClick={resetScores}
+              className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-900 hover:text-rose-400 text-slate-400 hover:bg-rose-950/20 transition duration-200"
+            >
+              Limpiar Predicciones
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

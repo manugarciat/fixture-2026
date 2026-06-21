@@ -4,9 +4,12 @@ import { STAGE_LABELS } from '../constants';
 
 export default function FixtureTab({
   scores,
+  realResults,
+  viewMode,
   resolvedTeams,
   handleScoreChange,
   handlePenWinner,
+  handleQuickPredictWin,
   selectedGroupFilter,
   setSelectedGroupFilter,
   selectedStageFilter,
@@ -66,6 +69,7 @@ export default function FixtureTab({
             const homeResolvedName = resolvedTeams[`${f.num}_home`] || f.home;
             const awayResolvedName = resolvedTeams[`${f.num}_away`] || f.away;
             const matchScores = scores[f.num] || { home: null, away: null, penWinner: null };
+            const officialScore = realResults[f.num];
 
             return (
               <MatchCard
@@ -74,8 +78,12 @@ export default function FixtureTab({
                 homeResolvedName={homeResolvedName}
                 awayResolvedName={awayResolvedName}
                 matchScores={matchScores}
+                disabled={viewMode === 'official'}
+                isOfficial={officialScore !== undefined}
+                officialScore={officialScore}
                 handleScoreChange={handleScoreChange}
                 handlePenWinner={handlePenWinner}
+                handleQuickPredictWin={handleQuickPredictWin}
               />
             );
           })

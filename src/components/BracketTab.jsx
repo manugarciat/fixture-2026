@@ -4,9 +4,12 @@ import fixturesData from '../data/fixtures.json';
 
 export default function BracketTab({
   scores,
+  realResults,
+  viewMode,
   resolvedTeams,
   handleScoreChange,
-  handlePenWinner
+  handlePenWinner,
+  handleQuickPredictWin
 }) {
   const getPlaceholder = (rawName) => {
     if (!rawName) return '';
@@ -17,6 +20,30 @@ export default function BracketTab({
       return `Perdedor Match ${rawName.split('Match ')[1]}`;
     }
     return rawName;
+  };
+
+  const getMatchProps = (num) => {
+    const f = fixturesData.find(m => m.num === num);
+    const h = resolvedTeams[`${num}_home`];
+    const a = resolvedTeams[`${num}_away`];
+    const s = scores[num] || { home: null, away: null, penWinner: null };
+    const officialScore = realResults[num];
+
+    return {
+      matchNum: num,
+      city: f?.city || '',
+      homeResolvedName: h,
+      awayResolvedName: a,
+      matchScores: s,
+      disabled: viewMode === 'official',
+      isOfficial: officialScore !== undefined,
+      officialScore: officialScore,
+      handleScoreChange: handleScoreChange,
+      handlePenWinner: handlePenWinner,
+      handleQuickPredictWin: handleQuickPredictWin,
+      placeholderHome: getPlaceholder(f?.home),
+      placeholderAway: getPlaceholder(f?.away)
+    };
   };
 
   return (
@@ -36,27 +63,9 @@ export default function BracketTab({
           <div className="text-center font-bold text-xs uppercase tracking-wider text-slate-500 mb-2 border-b border-slate-800 pb-1">
             Dieciseisavos (32)
           </div>
-          {[73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88].map(num => {
-            const f = fixturesData.find(m => m.num === num);
-            const h = resolvedTeams[`${num}_home`];
-            const a = resolvedTeams[`${num}_away`];
-            const s = scores[num] || { home: null, away: null, penWinner: null };
-
-            return (
-              <BracketMatch
-                key={num}
-                matchNum={num}
-                city={f.city}
-                homeResolvedName={h}
-                awayResolvedName={a}
-                matchScores={s}
-                handleScoreChange={handleScoreChange}
-                handlePenWinner={handlePenWinner}
-                placeholderHome={getPlaceholder(f.home)}
-                placeholderAway={getPlaceholder(f.away)}
-              />
-            );
-          })}
+          {[73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88].map(num => (
+            <BracketMatch key={num} {...getMatchProps(num)} />
+          ))}
         </div>
 
         {/* ROUND OF 16 */}
@@ -64,27 +73,9 @@ export default function BracketTab({
           <div className="text-center font-bold text-xs uppercase tracking-wider text-slate-500 mb-2 border-b border-slate-800 pb-1">
             Octavos de Final (16)
           </div>
-          {[89, 90, 91, 92, 93, 94, 95, 96].map(num => {
-            const f = fixturesData.find(m => m.num === num);
-            const h = resolvedTeams[`${num}_home`];
-            const a = resolvedTeams[`${num}_away`];
-            const s = scores[num] || { home: null, away: null, penWinner: null };
-
-            return (
-              <BracketMatch
-                key={num}
-                matchNum={num}
-                city={f.city}
-                homeResolvedName={h}
-                awayResolvedName={a}
-                matchScores={s}
-                handleScoreChange={handleScoreChange}
-                handlePenWinner={handlePenWinner}
-                placeholderHome={getPlaceholder(f.home)}
-                placeholderAway={getPlaceholder(f.away)}
-              />
-            );
-          })}
+          {[89, 90, 91, 92, 93, 94, 95, 96].map(num => (
+            <BracketMatch key={num} {...getMatchProps(num)} />
+          ))}
         </div>
 
         {/* QUARTER FINALS */}
@@ -92,27 +83,9 @@ export default function BracketTab({
           <div className="text-center font-bold text-xs uppercase tracking-wider text-slate-500 mb-2 border-b border-slate-800 pb-1">
             Cuartos de Final (8)
           </div>
-          {[97, 98, 99, 100].map(num => {
-            const f = fixturesData.find(m => m.num === num);
-            const h = resolvedTeams[`${num}_home`];
-            const a = resolvedTeams[`${num}_away`];
-            const s = scores[num] || { home: null, away: null, penWinner: null };
-
-            return (
-              <BracketMatch
-                key={num}
-                matchNum={num}
-                city={f.city}
-                homeResolvedName={h}
-                awayResolvedName={a}
-                matchScores={s}
-                handleScoreChange={handleScoreChange}
-                handlePenWinner={handlePenWinner}
-                placeholderHome={getPlaceholder(f.home)}
-                placeholderAway={getPlaceholder(f.away)}
-              />
-            );
-          })}
+          {[97, 98, 99, 100].map(num => (
+            <BracketMatch key={num} {...getMatchProps(num)} />
+          ))}
         </div>
 
         {/* SEMI FINALS */}
@@ -120,27 +93,9 @@ export default function BracketTab({
           <div className="text-center font-bold text-xs uppercase tracking-wider text-slate-500 mb-2 border-b border-slate-800 pb-1">
             Semifinales (4)
           </div>
-          {[101, 102].map(num => {
-            const f = fixturesData.find(m => m.num === num);
-            const h = resolvedTeams[`${num}_home`];
-            const a = resolvedTeams[`${num}_away`];
-            const s = scores[num] || { home: null, away: null, penWinner: null };
-
-            return (
-              <BracketMatch
-                key={num}
-                matchNum={num}
-                city={f.city}
-                homeResolvedName={h}
-                awayResolvedName={a}
-                matchScores={s}
-                handleScoreChange={handleScoreChange}
-                handlePenWinner={handlePenWinner}
-                placeholderHome={getPlaceholder(f.home)}
-                placeholderAway={getPlaceholder(f.away)}
-              />
-            );
-          })}
+          {[101, 102].map(num => (
+            <BracketMatch key={num} {...getMatchProps(num)} />
+          ))}
         </div>
 
         {/* FINAL & 3RD PLACE */}
@@ -150,28 +105,7 @@ export default function BracketTab({
             <div className="text-center font-bold text-xs uppercase tracking-wider text-amber-500 mb-2 border-b border-slate-800 pb-1">
               🏆 Gran Final
             </div>
-            {(() => {
-              const num = 104;
-              const f = fixturesData.find(m => m.num === num);
-              const h = resolvedTeams[`${num}_home`];
-              const a = resolvedTeams[`${num}_away`];
-              const s = scores[num] || { home: null, away: null, penWinner: null };
-
-              return (
-                <BracketMatch
-                  matchNum={num}
-                  city={f.city}
-                  homeResolvedName={h}
-                  awayResolvedName={a}
-                  matchScores={s}
-                  handleScoreChange={handleScoreChange}
-                  handlePenWinner={handlePenWinner}
-                  placeholderHome={getPlaceholder(f.home)}
-                  placeholderAway={getPlaceholder(f.away)}
-                  isFinal={true}
-                />
-              );
-            })()}
+            <BracketMatch {...getMatchProps(104)} isFinal={true} />
           </div>
 
           {/* THIRD PLACE */}
@@ -179,28 +113,7 @@ export default function BracketTab({
             <div className="text-center font-bold text-xs uppercase tracking-wider text-slate-500 mb-2 border-b border-slate-800 pb-1">
               🥉 Tercer Puesto
             </div>
-            {(() => {
-              const num = 103;
-              const f = fixturesData.find(m => m.num === num);
-              const h = resolvedTeams[`${num}_home`];
-              const a = resolvedTeams[`${num}_away`];
-              const s = scores[num] || { home: null, away: null, penWinner: null };
-
-              return (
-                <BracketMatch
-                  matchNum={num}
-                  city={f.city}
-                  homeResolvedName={h}
-                  awayResolvedName={a}
-                  matchScores={s}
-                  handleScoreChange={handleScoreChange}
-                  handlePenWinner={handlePenWinner}
-                  placeholderHome={getPlaceholder(f.home)}
-                  placeholderAway={getPlaceholder(f.away)}
-                  isThirdPlace={true}
-                />
-              );
-            })()}
+            <BracketMatch {...getMatchProps(103)} isThirdPlace={true} />
           </div>
         </div>
       </div>

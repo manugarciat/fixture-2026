@@ -21,6 +21,9 @@ import BracketTab from './components/BracketTab';
 
 export default function App() {
   const [realResults, setRealResults] = useState(fallbackRealResults);
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem('world_cup_2026_view_mode') || 'simulation';
+  });
 
   const [scores, setScores] = useState(() => {
     // 1. Try URL parameters first
@@ -61,7 +64,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [notification, setNotification] = useState(null);
 
-  // Fetch the latest real results from the server with a cache-buster query parameter
+  // Fetch latest real results
   useEffect(() => {
     fetch(`./real_results.json?t=${Date.now()}`)
       .then(res => {
@@ -96,6 +99,10 @@ export default function App() {
     localStorage.setItem('world_cup_2026_scores', JSON.stringify(scores));
   }, [scores]);
 
+  useEffect(() => {
+    localStorage.setItem('world_cup_2026_view_mode', viewMode);
+  }, [viewMode]);
+
   // Show notification helpers
   const showNotification = (message, type = 'success') => {
     setNotification({ text: message, type });
@@ -104,6 +111,7 @@ export default function App() {
 
   // Score handlers
   const handleScoreChange = (matchNum, team, value) => {
+    if (viewMode === 'official') return; // Read-only in official mode
     const val = value === '' ? null : parseInt(value, 10);
     setScores(prev => {
       const matchScores = { ...prev[matchNum], [team]: val };
@@ -116,10 +124,48 @@ export default function App() {
   };
 
   const handlePenWinner = (matchNum, winner) => {
+    if (viewMode === 'official') return; // Read-only in official mode
     setScores(prev => ({
       ...prev,
       [matchNum]: { ...prev[matchNum], penWinner: winner }
     }));
+  };
+
+  const handleQuickPredictWin = (matchNum, teamSide) => {
+    if (viewMode === 'official') return; // Read-only in official mode
+
+    setScores(prev => {
+      const match = prev[matchNum] || { home: null, away: null, penWinner: null };
+      const currentHome = match.home;
+      const currentAway = match.away;
+
+      let nextHome = currentHome;
+      let nextAway = currentAway;
+      let nextPenWinner = match.penWinner;
+
+      if (teamSide === 'home') {
+        if (currentHome > currentAway && currentHome !== null) {
+          nextHome = currentHome + 1;
+        } else {
+          nextHome = (currentAway !== null) ? currentAway + 1 : 1;
+          nextAway = (currentAway !== null) ? currentAway : 0;
+        }
+        nextPenWinner = null;
+      } else {
+        if (currentAway > currentHome && currentAway !== null) {
+          nextAway = currentAway + 1;
+        } else {
+          nextAway = (currentHome !== null) ? currentHome + 1 : 1;
+          nextHome = (currentHome !== null) ? currentHome : 0;
+        }
+        nextPenWinner = null;
+      }
+
+      return {
+        ...prev,
+        [matchNum]: { home: nextHome, away: nextAway, penWinner: nextPenWinner }
+      };
+    });
   };
 
   const resetScores = () => {
@@ -154,8 +200,7 @@ export default function App() {
   }, [realResults]);
 
   const loadRealResults = () => {
-    const dateStr = lastRealMatchDate ? ` hasta el ${lastRealMatchDate}` : '';
-    if (window.confirm(`¿Deseas cargar los resultados reales jugados${dateStr}?`)) {
+    if (window.confirm("¿Deseas cargar los resultados reales oficiales jugados hasta el momento?")) {
       setScores(prev => {
         const next = { ...prev };
         for (let [numStr, score] of Object.entries(realResults)) {
@@ -192,10 +237,27 @@ export default function App() {
     });
   };
 
+  // Determine active scores mapping
+  const activeScores = useMemo(() => {
+    if (viewMode === 'official') {
+      const official = {};
+      for (let i = 1; i <= 104; i++) {
+        const real = realResults[i];
+        if (real) {
+          official[i] = { home: real[0], away: real[1], penWinner: null };
+        } else {
+          official[i] = { home: null, away: null, penWinner: null };
+        }
+      }
+      return official;
+    }
+    return scores;
+  }, [viewMode, scores, realResults]);
+
   // Memoized calculations
   const groupStandings = useMemo(() => {
-    return calculateGroupStandings(scores, fixturesData);
-  }, [scores]);
+    return calculateGroupStandings(activeScores, fixturesData);
+  }, [activeScores]);
 
   const thirdPlaceRankings = useMemo(() => {
     return calculateThirdPlaceRankings(groupStandings);
@@ -206,8 +268,8 @@ export default function App() {
   }, [thirdPlaceRankings]);
 
   const resolvedTeams = useMemo(() => {
-    return resolveKnockoutTeams(scores, groupStandings, bestThirdsGroups, thirdPlaceMapping, fixturesData);
-  }, [scores, groupStandings, bestThirdsGroups]);
+    return resolveKnockoutTeams(activeScores, groupStandings, bestThirdsGroups, thirdPlaceMapping, fixturesData);
+  }, [activeScores, groupStandings, bestThirdsGroups]);
 
   const filteredFixtures = useMemo(() => {
     return fixturesData.filter(f => {
@@ -255,6 +317,8 @@ export default function App() {
 
       {/* Hero Header */}
       <Header
+        viewMode={viewMode}
+        setViewMode={setViewMode}
         lastRealMatchDate={lastRealMatchDate}
         loadRealResults={loadRealResults}
         simulateRandomly={simulateRandomly}
@@ -311,10 +375,13 @@ export default function App() {
         {/* TAB 1: FIXTURE */}
         {activeTab === 'fixture' && (
           <FixtureTab
-            scores={scores}
+            scores={activeScores}
+            realResults={realResults}
+            viewMode={viewMode}
             resolvedTeams={resolvedTeams}
             handleScoreChange={handleScoreChange}
             handlePenWinner={handlePenWinner}
+            handleQuickPredictWin={handleQuickPredictWin}
             selectedGroupFilter={selectedGroupFilter}
             setSelectedGroupFilter={setSelectedGroupFilter}
             selectedStageFilter={selectedStageFilter}
@@ -338,10 +405,13 @@ export default function App() {
         {/* TAB 4: BRACKET */}
         {activeTab === 'bracket' && (
           <BracketTab
-            scores={scores}
+            scores={activeScores}
+            realResults={realResults}
+            viewMode={viewMode}
             resolvedTeams={resolvedTeams}
             handleScoreChange={handleScoreChange}
             handlePenWinner={handlePenWinner}
+            handleQuickPredictWin={handleQuickPredictWin}
           />
         )}
       </main>
