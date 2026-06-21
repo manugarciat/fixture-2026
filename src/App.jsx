@@ -152,10 +152,15 @@ export default function App() {
         console.error("Error reading saved scores:", e);
       }
     }
-    // 3. Fallback: empty scores
+    // 3. Fallback: load real results by default
     const initial = {};
     for (let i = 1; i <= 104; i++) {
-      initial[i] = { home: null, away: null, penWinner: null };
+      const real = realResults[i];
+      if (real) {
+        initial[i] = { home: real[0], away: real[1], penWinner: null };
+      } else {
+        initial[i] = { home: null, away: null, penWinner: null };
+      }
     }
     return initial;
   });
