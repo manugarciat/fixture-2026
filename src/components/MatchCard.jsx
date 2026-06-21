@@ -25,16 +25,16 @@ export default function MatchCard({
 
   return (
     <div
-      className={`relative bg-slate-900/60 backdrop-blur-sm border rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition duration-200 ${
+      className={`relative bg-slate-900/60 backdrop-blur-sm border rounded-xl p-5 flex flex-col justify-between hover:border-slate-700 transition duration-205 ${
         isKnockout ? 'border-slate-800/80 shadow-purple-950/5 shadow-md' : 'border-slate-800'
       }`}
     >
       {/* Match header info */}
-      <div className="flex justify-between items-center text-xs text-slate-500 mb-3 border-b border-slate-800/60 pb-2">
+      <div className="flex justify-between items-center text-xs md:text-sm text-slate-500 mb-4 border-b border-slate-800/60 pb-2">
         <span className="font-semibold text-slate-400">Match #{fixture.num}</span>
         <div className="flex gap-2 items-center">
           {isOfficial && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/30 text-[9px] font-bold text-emerald-400">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/30 text-[10px] md:text-xs font-bold text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               OFICIAL
             </span>
@@ -51,20 +51,20 @@ export default function MatchCard({
         {/* Home Team */}
         <div
           className={`col-span-5 flex items-center gap-3 ${
-            !disabled ? 'hover:bg-slate-850/60 cursor-pointer rounded px-1.5 py-1 -mx-1.5 transition select-none' : ''
+            !disabled ? 'hover:bg-slate-850/60 cursor-pointer rounded px-2 py-1.5 -mx-2 transition select-none' : ''
           }`}
           onClick={() => !disabled && handleQuickPredictWin && handleQuickPredictWin(fixture.num, 'home')}
           title={!disabled ? `Haz clic para predecir victoria de ${homeResolvedName}` : ''}
         >
-          <Flag teamName={homeResolvedName} />
-          <span className="text-sm font-semibold truncate text-slate-200" title={homeResolvedName}>
+          <Flag teamName={homeResolvedName} sizeClass="w-7 h-5 md:w-8 md:h-5.5" />
+          <span className="text-sm md:text-base font-semibold truncate text-slate-200" title={homeResolvedName}>
             {homeResolvedName}
           </span>
         </div>
 
         {/* Scores */}
         <div className="col-span-2 flex flex-col items-center justify-center select-none">
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-1.5">
             <input
               type="number"
               min="0"
@@ -72,12 +72,12 @@ export default function MatchCard({
               disabled={disabled}
               value={matchScores.home === null ? '' : matchScores.home}
               onChange={(e) => handleScoreChange(fixture.num, 'home', e.target.value)}
-              className={`w-8 h-8 text-center bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded text-sm font-bold text-slate-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+              className={`w-9 h-9 md:w-10 md:h-10 text-center bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded text-sm md:text-base font-extrabold text-slate-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                 disabled ? 'opacity-70 cursor-not-allowed bg-slate-950/40 text-slate-400' : ''
               }`}
               placeholder="-"
             />
-            <span className="text-slate-650 font-bold text-xs">:</span>
+            <span className="text-slate-600 font-bold text-sm md:text-base">:</span>
             <input
               type="number"
               min="0"
@@ -85,7 +85,7 @@ export default function MatchCard({
               disabled={disabled}
               value={matchScores.away === null ? '' : matchScores.away}
               onChange={(e) => handleScoreChange(fixture.num, 'away', e.target.value)}
-              className={`w-8 h-8 text-center bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded text-sm font-bold text-slate-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+              className={`w-9 h-9 md:w-10 md:h-10 text-center bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded text-sm md:text-base font-extrabold text-slate-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                 disabled ? 'opacity-70 cursor-not-allowed bg-slate-950/40 text-slate-400' : ''
               }`}
               placeholder="-"
@@ -102,7 +102,7 @@ export default function MatchCard({
               </button>
             )}
             {isDifferentFromOfficial && (
-              <div className="text-[9px] text-emerald-500 font-bold bg-emerald-950/20 border border-emerald-900/30 px-1 py-0.5 rounded shadow-sm whitespace-nowrap">
+              <div className="text-[10px] md:text-xs text-emerald-400 font-extrabold bg-emerald-950/30 border border-emerald-900/40 px-2 py-0.5 rounded shadow-sm whitespace-nowrap mt-0.5">
                 Real: {officialScore[0]}-{officialScore[1]}
               </div>
             )}
@@ -112,15 +112,15 @@ export default function MatchCard({
         {/* Away Team */}
         <div
           className={`col-span-5 flex items-center justify-end gap-3 text-right ${
-            !disabled ? 'hover:bg-slate-850/60 cursor-pointer rounded px-1.5 py-1 -mx-1.5 transition select-none' : ''
+            !disabled ? 'hover:bg-slate-850/60 cursor-pointer rounded px-2 py-1.5 -mx-2 transition select-none' : ''
           }`}
           onClick={() => !disabled && handleQuickPredictWin && handleQuickPredictWin(fixture.num, 'away')}
           title={!disabled ? `Haz clic para predecir victoria de ${awayResolvedName}` : ''}
         >
-          <span className="text-sm font-semibold truncate text-slate-200" title={awayResolvedName}>
+          <span className="text-sm md:text-base font-semibold truncate text-slate-200" title={awayResolvedName}>
             {awayResolvedName}
           </span>
-          <Flag teamName={awayResolvedName} />
+          <Flag teamName={awayResolvedName} sizeClass="w-7 h-5 md:w-8 md:h-5.5" />
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function MatchCard({
             <button
               onClick={() => handlePenWinner(fixture.num, 'home')}
               disabled={disabled}
-              className={`px-3 py-1 text-xs rounded border transition font-semibold ${
+              className={`px-3 py-1 text-xs md:text-sm rounded border transition font-semibold ${
                 matchScores.penWinner === 'home'
                   ? 'bg-purple-600/30 border-purple-500 text-purple-200'
                   : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
@@ -145,7 +145,7 @@ export default function MatchCard({
             <button
               onClick={() => handlePenWinner(fixture.num, 'away')}
               disabled={disabled}
-              className={`px-3 py-1 text-xs rounded border transition font-semibold ${
+              className={`px-3 py-1 text-xs md:text-sm rounded border transition font-semibold ${
                 matchScores.penWinner === 'away'
                   ? 'bg-purple-600/30 border-purple-500 text-purple-200'
                   : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
@@ -158,7 +158,7 @@ export default function MatchCard({
       )}
 
       {/* Stadium & City info */}
-      <div className="mt-3 pt-2 border-t border-slate-800/40 text-[10px] text-slate-500 flex justify-between">
+      <div className="mt-4 pt-2 border-t border-slate-800/40 text-xs text-slate-500 flex justify-between">
         <span className="truncate max-w-[60%]">{fixture.stadium}</span>
         <span className="font-semibold text-slate-400">{fixture.city.replace('-', ' ').toUpperCase()}</span>
       </div>
