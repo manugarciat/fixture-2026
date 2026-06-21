@@ -9,6 +9,7 @@ export default function BracketTab({
   resolvedTeams,
   handleScoreChange,
   handlePenWinner,
+  handlePenScoreChange,
   handleQuickPredictWin,
   handleRandomizeMatch
 }) {
@@ -41,6 +42,7 @@ export default function BracketTab({
       officialScore: officialScore,
       handleScoreChange: handleScoreChange,
       handlePenWinner: handlePenWinner,
+      handlePenScoreChange: handlePenScoreChange,
       handleQuickPredictWin: handleQuickPredictWin,
       handleRandomizeMatch: handleRandomizeMatch,
       placeholderHome: getPlaceholder(f?.home),

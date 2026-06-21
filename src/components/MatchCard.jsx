@@ -12,6 +12,7 @@ export default function MatchCard({
   officialScore = null,
   handleScoreChange,
   handlePenWinner,
+  handlePenScoreChange,
   handleQuickPredictWin,
   handleRandomizeMatch
 }) {
@@ -91,6 +92,31 @@ export default function MatchCard({
               placeholder="-"
             />
           </div>
+          {showPenaltiesInput && (
+            <div className="flex items-center justify-center gap-1 mt-1 text-[11px] text-purple-400 font-bold">
+              <span>(</span>
+              <input
+                type="number"
+                min="0"
+                disabled={disabled}
+                value={matchScores.penHome === null ? '' : matchScores.penHome}
+                onChange={(e) => handlePenScoreChange(fixture.num, 'home', e.target.value)}
+                className="w-6 h-5 text-center bg-slate-950 border border-purple-900/60 focus:border-purple-500 rounded text-[10px] font-bold text-purple-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="p"
+              />
+              <span className="text-purple-600 font-bold text-[9px]">-</span>
+              <input
+                type="number"
+                min="0"
+                disabled={disabled}
+                value={matchScores.penAway === null ? '' : matchScores.penAway}
+                onChange={(e) => handlePenScoreChange(fixture.num, 'away', e.target.value)}
+                className="w-6 h-5 text-center bg-slate-950 border border-purple-900/60 focus:border-purple-500 rounded text-[10px] font-bold text-purple-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="p"
+              />
+              <span>)</span>
+            </div>
+          )}
           <div className="flex flex-col items-center gap-1 mt-1.5">
             {!disabled && handleRandomizeMatch && (
               <button

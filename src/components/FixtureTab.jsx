@@ -9,6 +9,7 @@ export default function FixtureTab({
   resolvedTeams,
   handleScoreChange,
   handlePenWinner,
+  handlePenScoreChange,
   handleQuickPredictWin,
   handleRandomizeMatch,
   selectedGroupFilter,
@@ -84,6 +85,7 @@ export default function FixtureTab({
                 officialScore={officialScore}
                 handleScoreChange={handleScoreChange}
                 handlePenWinner={handlePenWinner}
+                handlePenScoreChange={handlePenScoreChange}
                 handleQuickPredictWin={handleQuickPredictWin}
                 handleRandomizeMatch={handleRandomizeMatch}
               />

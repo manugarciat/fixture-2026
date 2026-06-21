@@ -50,9 +50,15 @@ export default function App() {
     for (let i = 1; i <= 104; i++) {
       const real = fallbackRealResults[i];
       if (real) {
-        initial[i] = { home: real[0], away: real[1], penWinner: null };
+        initial[i] = {
+          home: real[0],
+          away: real[1],
+          penWinner: real.length >= 4 ? (real[2] > real[3] ? 'home' : 'away') : (real[2] || null),
+          penHome: real.length >= 4 ? real[2] : null,
+          penAway: real.length >= 4 ? real[3] : null
+        };
       } else {
-        initial[i] = { home: null, away: null, penWinner: null };
+        initial[i] = { home: null, away: null, penWinner: null, penHome: null, penAway: null };
       }
     }
     return initial;
@@ -82,7 +88,13 @@ export default function App() {
           for (let [numStr, score] of Object.entries(data)) {
             const num = parseInt(numStr, 10);
             if (next[num] && next[num].home === null && next[num].away === null) {
-              next[num] = { home: score[0], away: score[1], penWinner: null };
+              next[num] = {
+                home: score[0],
+                away: score[1],
+                penWinner: score.length >= 4 ? (score[2] > score[3] ? 'home' : 'away') : (score[2] || null),
+                penHome: score.length >= 4 ? score[2] : null,
+                penAway: score.length >= 4 ? score[3] : null
+              };
               updated = true;
             }
           }
@@ -115,9 +127,11 @@ export default function App() {
     const val = value === '' ? null : parseInt(value, 10);
     setScores(prev => {
       const matchScores = { ...prev[matchNum], [team]: val };
-      // Clear penWinner if score is not a tie
+      // Clear penalties if score is not a tie
       if (matchScores.home !== matchScores.away || matchScores.home === null) {
         matchScores.penWinner = null;
+        matchScores.penHome = null;
+        matchScores.penAway = null;
       }
       return { ...prev, [matchNum]: matchScores };
     });
@@ -125,10 +139,53 @@ export default function App() {
 
   const handlePenWinner = (matchNum, winner) => {
     if (viewMode === 'official') return; // Read-only in official mode
-    setScores(prev => ({
-      ...prev,
-      [matchNum]: { ...prev[matchNum], penWinner: winner }
-    }));
+    setScores(prev => {
+      const matchScores = { ...prev[matchNum] };
+      matchScores.penWinner = winner;
+      
+      // Sync default pen scores to reflect the winner if they are empty
+      if (matchScores.penHome === null && matchScores.penAway === null) {
+        if (winner === 'home') {
+          matchScores.penHome = 5;
+          matchScores.penAway = 4;
+        } else if (winner === 'away') {
+          matchScores.penHome = 4;
+          matchScores.penAway = 5;
+        }
+      } else {
+        // If they already have scores but we changed the winner, ensure the scores match the winner
+        if (winner === 'home' && (matchScores.penHome <= matchScores.penAway || matchScores.penHome === null)) {
+          matchScores.penHome = (matchScores.penAway || 0) + 1;
+        } else if (winner === 'away' && (matchScores.penAway <= matchScores.penHome || matchScores.penAway === null)) {
+          matchScores.penAway = (matchScores.penHome || 0) + 1;
+        }
+      }
+      return { ...prev, [matchNum]: matchScores };
+    });
+  };
+
+  const handlePenScoreChange = (matchNum, team, value) => {
+    if (viewMode === 'official') return; // Read-only in official mode
+    const val = value === '' ? null : parseInt(value, 10);
+    setScores(prev => {
+      const matchScores = { ...prev[matchNum] };
+      matchScores[team === 'home' ? 'penHome' : 'penAway'] = val;
+      
+      // Auto-determine penWinner if both values are entered and not equal
+      if (matchScores.penHome !== null && matchScores.penAway !== null) {
+        if (matchScores.penHome > matchScores.penAway) {
+          matchScores.penWinner = 'home';
+        } else if (matchScores.penHome < matchScores.penAway) {
+          matchScores.penWinner = 'away';
+        } else {
+          matchScores.penWinner = null; // Still a tie in penalties
+        }
+      } else {
+        matchScores.penWinner = null;
+      }
+      
+      return { ...prev, [matchNum]: matchScores };
+    });
   };
 
   const handleQuickPredictWin = (matchNum, teamSide) => {
@@ -175,15 +232,25 @@ export default function App() {
       const homeScore = Math.floor(Math.random() * 4);
       const awayScore = Math.floor(Math.random() * 4);
       let penWinner = null;
+      let penHome = null;
+      let penAway = null;
       
-      // If knockout match and tie, choose a random penalty winner
+      // If knockout match and tie, choose a random penalty winner and score
       if (matchNum > 72 && homeScore === awayScore) {
-        penWinner = Math.random() < 0.5 ? 'home' : 'away';
+        const win = Math.random() < 0.5 ? 'home' : 'away';
+        penWinner = win;
+        if (win === 'home') {
+          penHome = 5;
+          penAway = Math.floor(Math.random() * 5); // 0 to 4
+        } else {
+          penAway = 5;
+          penHome = Math.floor(Math.random() * 5); // 0 to 4
+        }
       }
 
       return {
         ...prev,
-        [matchNum]: { home: homeScore, away: awayScore, penWinner }
+        [matchNum]: { home: homeScore, away: awayScore, penWinner, penHome, penAway }
       };
     });
   };
@@ -192,7 +259,7 @@ export default function App() {
     if (window.confirm("¿Seguro que deseas borrar todas tus simulaciones?")) {
       const initial = {};
       for (let i = 1; i <= 104; i++) {
-        initial[i] = { home: null, away: null, penWinner: null };
+        initial[i] = { home: null, away: null, penWinner: null, penHome: null, penAway: null };
       }
       setScores(initial);
       // Clean query string
@@ -239,7 +306,7 @@ export default function App() {
       for (let i = 1; i <= 72; i++) {
         const homeScore = Math.floor(Math.random() * 4);
         const awayScore = Math.floor(Math.random() * 4);
-        next[i] = { home: homeScore, away: awayScore, penWinner: null };
+        next[i] = { home: homeScore, away: awayScore, penWinner: null, penHome: null, penAway: null };
       }
       return next;
     });
@@ -264,9 +331,15 @@ export default function App() {
       for (let i = 1; i <= 104; i++) {
         const real = realResults[i];
         if (real) {
-          official[i] = { home: real[0], away: real[1], penWinner: null };
+          official[i] = {
+            home: real[0],
+            away: real[1],
+            penWinner: real.length >= 4 ? (real[2] > real[3] ? 'home' : 'away') : (real[2] || null),
+            penHome: real.length >= 4 ? real[2] : null,
+            penAway: real.length >= 4 ? real[3] : null
+          };
         } else {
-          official[i] = { home: null, away: null, penWinner: null };
+          official[i] = { home: null, away: null, penWinner: null, penHome: null, penAway: null };
         }
       }
       return official;
@@ -401,6 +474,7 @@ export default function App() {
             resolvedTeams={resolvedTeams}
             handleScoreChange={handleScoreChange}
             handlePenWinner={handlePenWinner}
+            handlePenScoreChange={handlePenScoreChange}
             handleQuickPredictWin={handleQuickPredictWin}
             handleRandomizeMatch={handleRandomizeMatch}
             selectedGroupFilter={selectedGroupFilter}
@@ -432,6 +506,7 @@ export default function App() {
             resolvedTeams={resolvedTeams}
             handleScoreChange={handleScoreChange}
             handlePenWinner={handlePenWinner}
+            handlePenScoreChange={handlePenScoreChange}
             handleQuickPredictWin={handleQuickPredictWin}
             handleRandomizeMatch={handleRandomizeMatch}
           />

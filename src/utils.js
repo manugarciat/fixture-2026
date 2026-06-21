@@ -9,7 +9,10 @@ export const serializeScores = (scores) => {
       const home = s.home === null ? '_' : s.home;
       const away = s.away === null ? '_' : s.away;
       const pen = s.penWinner ? (s.penWinner === 'home' ? 'h' : 'a') : '';
-      parts.push(`${home}-${away}${pen}`);
+      const penScores = (s.penHome !== null && s.penHome !== undefined && s.penAway !== null && s.penAway !== undefined)
+        ? `p${s.penHome}-${s.penAway}`
+        : '';
+      parts.push(`${home}-${away}${pen}${penScores}`);
     }
   }
   let compressed = [];
@@ -48,15 +51,27 @@ export const deserializeScores = (str) => {
     const item = items[i];
     const matchNum = i + 1;
     if (item === 'x' || !item) {
-      scores[matchNum] = { home: null, away: null, penWinner: null };
+      scores[matchNum] = { home: null, away: null, penWinner: null, penHome: null, penAway: null };
     } else {
-      const pen = item.endsWith('h') ? 'home' : (item.endsWith('a') ? 'away' : null);
-      const scorePart = pen ? item.slice(0, -1) : item;
+      const [mainPart, penPart] = item.split('p');
+      const pen = mainPart.endsWith('h') ? 'home' : (mainPart.endsWith('a') ? 'away' : null);
+      const scorePart = pen ? mainPart.slice(0, -1) : mainPart;
       const [homeStr, awayStr] = scorePart.split('-');
+      
+      let penHome = null;
+      let penAway = null;
+      if (penPart) {
+        const [penHomeStr, penAwayStr] = penPart.split('-');
+        penHome = (penHomeStr !== undefined && penHomeStr !== '') ? parseInt(penHomeStr, 10) : null;
+        penAway = (penAwayStr !== undefined && penAwayStr !== '') ? parseInt(penAwayStr, 10) : null;
+      }
+
       scores[matchNum] = {
         home: homeStr === '_' ? null : parseInt(homeStr, 10),
         away: awayStr === '_' ? null : parseInt(awayStr, 10),
-        penWinner: pen
+        penWinner: pen,
+        penHome,
+        penAway
       };
     }
   }

@@ -12,6 +12,7 @@ export default function BracketMatch({
   officialScore = null,
   handleScoreChange,
   handlePenWinner,
+  handlePenScoreChange,
   handleQuickPredictWin,
   handleRandomizeMatch,
   placeholderHome = '',
@@ -73,18 +74,25 @@ export default function BracketMatch({
             <Flag teamName={h} sizeClass="w-6 h-4 md:w-7 md:h-5" />
             <span className="truncate font-semibold text-sm md:text-base">{h || placeholderHome}</span>
           </div>
-          <input
-            type="number"
-            min="0"
-            disabled={disabled}
-            value={s.home === null ? '' : s.home}
-            onChange={(e) => handleScoreChange(matchNum, 'home', e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            className={`w-8 h-8 md:w-10 md:h-10 text-center bg-slate-950 border border-slate-800 rounded-lg text-amber-300 text-sm md:text-base font-extrabold focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-              disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
-            }`}
-            placeholder="-"
-          />
+          <div className="flex items-center gap-1.5">
+            {isCompleted && s.home === s.away && s.penHome !== null && (
+              <span className="text-xs md:text-sm text-amber-400 font-extrabold" title="Goles de Penal">
+                ({s.penHome})
+              </span>
+            )}
+            <input
+              type="number"
+              min="0"
+              disabled={disabled}
+              value={s.home === null ? '' : s.home}
+              onChange={(e) => handleScoreChange(matchNum, 'home', e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-8 h-8 md:w-10 md:h-10 text-center bg-slate-950 border border-slate-800 rounded-lg text-amber-300 text-sm md:text-base font-extrabold focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
+              }`}
+              placeholder="-"
+            />
+          </div>
         </div>
 
         {/* Away */}
@@ -99,38 +107,78 @@ export default function BracketMatch({
             <Flag teamName={a} sizeClass="w-6 h-4 md:w-7 md:h-5" />
             <span className="truncate font-semibold text-sm md:text-base">{a || placeholderAway}</span>
           </div>
-          <input
-            type="number"
-            min="0"
-            disabled={disabled}
-            value={s.away === null ? '' : s.away}
-            onChange={(e) => handleScoreChange(matchNum, 'away', e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            className={`w-8 h-8 md:w-10 md:h-10 text-center bg-slate-950 border border-slate-800 rounded-lg text-amber-300 text-sm md:text-base font-extrabold focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-              disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
-            }`}
-            placeholder="-"
-          />
+          <div className="flex items-center gap-1.5">
+            {isCompleted && s.home === s.away && s.penAway !== null && (
+              <span className="text-xs md:text-sm text-amber-400 font-extrabold" title="Goles de Penal">
+                ({s.penAway})
+              </span>
+            )}
+            <input
+              type="number"
+              min="0"
+              disabled={disabled}
+              value={s.away === null ? '' : s.away}
+              onChange={(e) => handleScoreChange(matchNum, 'away', e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-8 h-8 md:w-10 md:h-10 text-center bg-slate-950 border border-slate-800 rounded-lg text-amber-300 text-sm md:text-base font-extrabold focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
+              }`}
+              placeholder="-"
+            />
+          </div>
         </div>
 
         {/* Shootout tie breaker */}
-        {isCompleted && s.home === s.away && !s.penWinner && (
-          <div className="mt-3 text-center">
-            <p className="text-[10px] text-amber-400 font-bold mb-1">Campeón por Penales:</p>
-            <div className="flex gap-2 justify-center">
+        {isCompleted && s.home === s.away && (
+          <div className="mt-3 p-2 bg-amber-500/5 border border-amber-500/20 rounded-lg text-center" onClick={(e) => e.stopPropagation()}>
+            <p className="text-[10px] text-amber-400 font-bold mb-2">Goles en Penales:</p>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-xs text-slate-400 truncate max-w-[35%]">{h || placeholderHome}</span>
+              <input
+                type="number"
+                min="0"
+                disabled={disabled}
+                value={s.penHome === null ? '' : s.penHome}
+                onChange={(e) => handlePenScoreChange(matchNum, 'home', e.target.value)}
+                className="w-8 h-7 text-center bg-slate-950 border border-amber-900/60 rounded text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="p"
+              />
+              <span className="text-amber-500/60 font-semibold">-</span>
+              <input
+                type="number"
+                min="0"
+                disabled={disabled}
+                value={s.penAway === null ? '' : s.penAway}
+                onChange={(e) => handlePenScoreChange(matchNum, 'away', e.target.value)}
+                className="w-8 h-7 text-center bg-slate-950 border border-amber-900/60 rounded text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="p"
+              />
+              <span className="text-xs text-slate-400 truncate max-w-[35%]">{a || placeholderAway}</span>
+            </div>
+            <div className="flex gap-1.5 justify-center">
               <button
                 disabled={disabled}
-                onClick={(e) => { e.stopPropagation(); handlePenWinner(matchNum, 'home'); }}
-                className="px-3 py-1 bg-slate-950 border border-amber-900/40 rounded text-xs text-amber-305 font-bold hover:border-amber-500 transition"
+                onClick={() => handlePenWinner(matchNum, 'home')}
+                className={`px-3 py-1 rounded text-xs font-semibold border transition max-w-[48%] truncate ${
+                  s.penWinner === 'home'
+                    ? 'bg-amber-500/25 border-amber-500 text-amber-200 font-bold'
+                    : 'bg-slate-950 border-amber-900/20 text-slate-400 hover:border-amber-500/40'
+                }`}
+                title={`Avanza ${h || placeholderHome}`}
               >
-                Home
+                🏆 {h || placeholderHome}
               </button>
               <button
                 disabled={disabled}
-                onClick={(e) => { e.stopPropagation(); handlePenWinner(matchNum, 'away'); }}
-                className="px-3 py-1 bg-slate-950 border border-amber-900/40 rounded text-xs text-amber-305 font-bold hover:border-amber-500 transition"
+                onClick={() => handlePenWinner(matchNum, 'away')}
+                className={`px-3 py-1 rounded text-xs font-semibold border transition max-w-[48%] truncate ${
+                  s.penWinner === 'away'
+                    ? 'bg-amber-500/25 border-amber-500 text-amber-200 font-bold'
+                    : 'bg-slate-950 border-amber-900/20 text-slate-400 hover:border-amber-500/40'
+                }`}
+                title={`Avanza ${a || placeholderAway}`}
               >
-                Away
+                🏆 {a || placeholderAway}
               </button>
             </div>
           </div>
@@ -200,18 +248,25 @@ export default function BracketMatch({
           <Flag teamName={h} sizeClass="w-5 h-3.5 md:w-6 md:h-4" />
           <span className="truncate text-xs md:text-sm font-semibold">{h || placeholderHome}</span>
         </div>
-        <input
-          type="number"
-          min="0"
-          disabled={disabled}
-          value={s.home === null ? '' : s.home}
-          onChange={(e) => handleScoreChange(matchNum, 'home', e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          className={`w-7 h-7 md:w-8 md:h-8 text-center bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-extrabold text-xs md:text-sm focus:outline-none focus:border-emerald-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-            disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
-          }`}
-          placeholder="-"
-        />
+        <div className="flex items-center gap-1">
+          {isCompleted && s.home === s.away && s.penHome !== null && (
+            <span className="text-[10px] md:text-xs text-purple-400 font-extrabold mr-1" title="Goles de Penal">
+              ({s.penHome})
+            </span>
+          )}
+          <input
+            type="number"
+            min="0"
+            disabled={disabled}
+            value={s.home === null ? '' : s.home}
+            onChange={(e) => handleScoreChange(matchNum, 'home', e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            className={`w-7 h-7 md:w-8 md:h-8 text-center bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-extrabold text-xs md:text-sm focus:outline-none focus:border-emerald-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+              disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
+            }`}
+            placeholder="-"
+          />
+        </div>
       </div>
 
       {/* Away */}
@@ -226,38 +281,76 @@ export default function BracketMatch({
           <Flag teamName={a} sizeClass="w-5 h-3.5 md:w-6 md:h-4" />
           <span className="truncate text-xs md:text-sm font-semibold">{a || placeholderAway}</span>
         </div>
-        <input
-          type="number"
-          min="0"
-          disabled={disabled}
-          value={s.away === null ? '' : s.away}
-          onChange={(e) => handleScoreChange(matchNum, 'away', e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          className={`w-7 h-7 md:w-8 md:h-8 text-center bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-extrabold text-xs md:text-sm focus:outline-none focus:border-emerald-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-            disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
-          }`}
-          placeholder="-"
-        />
+        <div className="flex items-center gap-1">
+          {isCompleted && s.home === s.away && s.penAway !== null && (
+            <span className="text-[10px] md:text-xs text-purple-400 font-extrabold mr-1" title="Goles de Penal">
+              ({s.penAway})
+            </span>
+          )}
+          <input
+            type="number"
+            min="0"
+            disabled={disabled}
+            value={s.away === null ? '' : s.away}
+            onChange={(e) => handleScoreChange(matchNum, 'away', e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            className={`w-7 h-7 md:w-8 md:h-8 text-center bg-slate-950 border border-slate-800 rounded-lg text-slate-100 font-extrabold text-xs md:text-sm focus:outline-none focus:border-emerald-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+              disabled ? 'opacity-70 bg-slate-950/40 text-slate-400 cursor-not-allowed' : ''
+            }`}
+            placeholder="-"
+          />
+        </div>
       </div>
 
       {/* Shootout selector if tie */}
-      {isCompleted && s.home === s.away && !s.penWinner && (
-        <div className="mt-2 text-center">
-          <p className="text-[9px] text-purple-400 font-bold mb-1">Definir penales:</p>
-          <div className="flex gap-1.5 justify-center">
+      {isCompleted && s.home === s.away && (
+        <div className="mt-2.5 p-1.5 bg-purple-950/10 border border-purple-900/20 rounded-lg text-center" onClick={(e) => e.stopPropagation()}>
+          <p className="text-[9px] text-purple-400 font-bold mb-1">Goles en Penales:</p>
+          <div className="flex items-center justify-center gap-1.5 mb-1.5">
+            <input
+              type="number"
+              min="0"
+              disabled={disabled}
+              value={s.penHome === null ? '' : s.penHome}
+              onChange={(e) => handlePenScoreChange(matchNum, 'home', e.target.value)}
+              className="w-7 h-6 text-center bg-slate-950 border border-purple-900/60 rounded text-[10px] font-bold text-purple-300 focus:outline-none focus:border-purple-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              placeholder="p"
+            />
+            <span className="text-purple-500/60 font-semibold text-xs">-</span>
+            <input
+              type="number"
+              min="0"
+              disabled={disabled}
+              value={s.penAway === null ? '' : s.penAway}
+              onChange={(e) => handlePenScoreChange(matchNum, 'away', e.target.value)}
+              className="w-7 h-6 text-center bg-slate-950 border border-purple-900/60 rounded text-[10px] font-bold text-purple-300 focus:outline-none focus:border-purple-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              placeholder="p"
+            />
+          </div>
+          <div className="flex gap-1 justify-center">
             <button
               disabled={disabled}
-              onClick={(e) => { e.stopPropagation(); handlePenWinner(matchNum, 'home'); }}
-              className="px-2 py-0.5 bg-slate-950 border border-slate-850 hover:border-purple-555 rounded text-[10px] text-purple-400 hover:text-purple-305 transition select-none font-semibold"
+              onClick={() => handlePenWinner(matchNum, 'home')}
+              className={`px-2 py-0.5 rounded text-[9px] font-semibold border transition max-w-[48%] truncate ${
+                s.penWinner === 'home'
+                  ? 'bg-purple-600/25 border-purple-500 text-purple-200 font-bold'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+              }`}
+              title={`Avanza ${h || placeholderHome}`}
             >
-              Home
+              {h || placeholderHome}
             </button>
             <button
               disabled={disabled}
-              onClick={(e) => { e.stopPropagation(); handlePenWinner(matchNum, 'away'); }}
-              className="px-2 py-0.5 bg-slate-950 border border-slate-855 hover:border-purple-555 rounded text-[10px] text-purple-400 hover:text-purple-305 transition select-none font-semibold"
+              onClick={() => handlePenWinner(matchNum, 'away')}
+              className={`px-2 py-0.5 rounded text-[9px] font-semibold border transition max-w-[48%] truncate ${
+                s.penWinner === 'away'
+                  ? 'bg-purple-600/25 border-purple-500 text-purple-200 font-bold'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+              }`}
+              title={`Avanza ${a || placeholderAway}`}
             >
-              Away
+              {a || placeholderAway}
             </button>
           </div>
         </div>
