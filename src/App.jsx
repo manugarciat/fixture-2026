@@ -210,8 +210,27 @@ export default function App() {
     }
   };
 
+  const lastRealMatchDate = useMemo(() => {
+    let latestMatch = null;
+    Object.keys(realResults).forEach(numStr => {
+      const num = parseInt(numStr, 10);
+      const fixture = fixturesData.find(f => f.num === num);
+      if (fixture) {
+        if (!latestMatch || fixture.date > latestMatch.date) {
+          latestMatch = fixture;
+        }
+      }
+    });
+    if (!latestMatch) return null;
+    const [year, month, day] = latestMatch.date.split('-');
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const monthName = months[parseInt(month, 10) - 1];
+    return `${parseInt(day, 10)} de ${monthName}`;
+  }, []);
+
   const loadRealResults = () => {
-    if (window.confirm("¿Deseas cargar los resultados reales jugados hasta el 20 de junio de 2026?")) {
+    const dateStr = lastRealMatchDate ? ` hasta el ${lastRealMatchDate}` : '';
+    if (window.confirm(`¿Deseas cargar los resultados reales jugados${dateStr}?`)) {
       setScores(prev => {
         const next = { ...prev };
         for (let [numStr, score] of Object.entries(realResults)) {
@@ -578,7 +597,7 @@ export default function App() {
               onClick={loadRealResults}
               className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
             >
-              📅 Cargar Resultados Reales (Jun 20)
+              📅 Cargar Resultados Reales {lastRealMatchDate ? `(${lastRealMatchDate})` : ''}
             </button>
             <button 
               onClick={simulateRandomly}
