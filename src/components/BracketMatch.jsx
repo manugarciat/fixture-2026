@@ -13,6 +13,7 @@ export default function BracketMatch({
   handleScoreChange,
   handlePenWinner,
   handleQuickPredictWin,
+  handleRandomizeMatch,
   placeholderHome = '',
   placeholderAway = '',
   isFinal = false,
@@ -39,9 +40,18 @@ export default function BracketMatch({
   if (isFinal) {
     return (
       <div className="bg-slate-900/60 border-2 border-amber-500/30 rounded-xl p-3.5 text-xs hover:border-amber-500/60 transition shadow-lg shadow-amber-950/10">
-        <div className="text-[10px] text-amber-400/80 font-bold mb-2 flex justify-between items-center">
+        <div className="text-[10px] text-amber-400/80 font-bold mb-2 flex justify-between items-center select-none">
           <div className="flex gap-1.5 items-center">
             <span>Partido {matchNum} - FINAL</span>
+            {!disabled && handleRandomizeMatch && (
+              <button
+                onClick={(e) => { e.stopPropagation(); handleRandomizeMatch(matchNum); }}
+                className="p-0.5 rounded hover:bg-slate-800 text-[10px] transition cursor-pointer leading-none"
+                title="Simular aleatoriamente"
+              >
+                🎲
+              </button>
+            )}
             {isOfficial && (
               <span className="inline-flex items-center px-1 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/30 text-[8px] font-bold text-emerald-400">
                 OFICIAL
@@ -155,8 +165,19 @@ export default function BracketMatch({
 
   return (
     <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-2.5 text-xs hover:border-slate-700 transition">
-      <div className="text-[10px] text-slate-500 font-semibold mb-1.5 flex justify-between items-center">
-        <span>Partido {matchNum}</span>
+      <div className="text-[10px] text-slate-500 font-semibold mb-1.5 flex justify-between items-center select-none">
+        <div className="flex gap-1.5 items-center">
+          <span>Partido {matchNum}</span>
+          {!disabled && handleRandomizeMatch && (
+            <button
+              onClick={(e) => { e.stopPropagation(); handleRandomizeMatch(matchNum); }}
+              className="p-0.5 rounded hover:bg-slate-800 text-[10px] transition cursor-pointer leading-none"
+              title="Simular aleatoriamente"
+            >
+              🎲
+            </button>
+          )}
+        </div>
         <div className="flex gap-1 items-center">
           {isOfficial && (
             <span className="inline-flex items-center px-1 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/30 text-[8px] font-bold text-emerald-400">

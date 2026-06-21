@@ -168,6 +168,26 @@ export default function App() {
     });
   };
 
+  const handleRandomizeMatch = (matchNum) => {
+    if (viewMode === 'official') return; // Read-only in official mode
+
+    setScores(prev => {
+      const homeScore = Math.floor(Math.random() * 4);
+      const awayScore = Math.floor(Math.random() * 4);
+      let penWinner = null;
+      
+      // If knockout match and tie, choose a random penalty winner
+      if (matchNum > 72 && homeScore === awayScore) {
+        penWinner = Math.random() < 0.5 ? 'home' : 'away';
+      }
+
+      return {
+        ...prev,
+        [matchNum]: { home: homeScore, away: awayScore, penWinner }
+      };
+    });
+  };
+
   const resetScores = () => {
     if (window.confirm("¿Seguro que deseas borrar todas tus simulaciones?")) {
       const initial = {};
@@ -382,6 +402,7 @@ export default function App() {
             handleScoreChange={handleScoreChange}
             handlePenWinner={handlePenWinner}
             handleQuickPredictWin={handleQuickPredictWin}
+            handleRandomizeMatch={handleRandomizeMatch}
             selectedGroupFilter={selectedGroupFilter}
             setSelectedGroupFilter={setSelectedGroupFilter}
             selectedStageFilter={selectedStageFilter}
@@ -412,6 +433,7 @@ export default function App() {
             handleScoreChange={handleScoreChange}
             handlePenWinner={handlePenWinner}
             handleQuickPredictWin={handleQuickPredictWin}
+            handleRandomizeMatch={handleRandomizeMatch}
           />
         )}
       </main>

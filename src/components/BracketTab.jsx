@@ -9,7 +9,8 @@ export default function BracketTab({
   resolvedTeams,
   handleScoreChange,
   handlePenWinner,
-  handleQuickPredictWin
+  handleQuickPredictWin,
+  handleRandomizeMatch
 }) {
   const getPlaceholder = (rawName) => {
     if (!rawName) return '';
@@ -41,6 +42,7 @@ export default function BracketTab({
       handleScoreChange: handleScoreChange,
       handlePenWinner: handlePenWinner,
       handleQuickPredictWin: handleQuickPredictWin,
+      handleRandomizeMatch: handleRandomizeMatch,
       placeholderHome: getPlaceholder(f?.home),
       placeholderAway: getPlaceholder(f?.away)
     };

@@ -12,7 +12,8 @@ export default function MatchCard({
   officialScore = null,
   handleScoreChange,
   handlePenWinner,
-  handleQuickPredictWin
+  handleQuickPredictWin,
+  handleRandomizeMatch
 }) {
   const isKnockout = fixture.stage !== 'group-stage';
   const showPenaltiesInput = isKnockout && matchScores.home !== null && matchScores.away !== null && matchScores.home === matchScores.away;
@@ -90,11 +91,22 @@ export default function MatchCard({
               placeholder="-"
             />
           </div>
-          {isDifferentFromOfficial && (
-            <div className="text-[9px] text-emerald-500 font-bold mt-1 bg-emerald-950/20 border border-emerald-900/30 px-1 py-0.5 rounded shadow-sm">
-              Real: {officialScore[0]}-{officialScore[1]}
-            </div>
-          )}
+          <div className="flex flex-col items-center gap-1 mt-1.5">
+            {!disabled && handleRandomizeMatch && (
+              <button
+                onClick={(e) => { e.stopPropagation(); handleRandomizeMatch(fixture.num); }}
+                className="p-1 rounded bg-slate-950 border border-slate-800 hover:border-purple-500 hover:text-purple-400 text-slate-500 text-[10px] transition cursor-pointer leading-none"
+                title="Simular marcador aleatoriamente"
+              >
+                🎲
+              </button>
+            )}
+            {isDifferentFromOfficial && (
+              <div className="text-[9px] text-emerald-500 font-bold bg-emerald-950/20 border border-emerald-900/30 px-1 py-0.5 rounded shadow-sm whitespace-nowrap">
+                Real: {officialScore[0]}-{officialScore[1]}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Away Team */}

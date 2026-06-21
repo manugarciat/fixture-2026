@@ -10,6 +10,7 @@ export default function FixtureTab({
   handleScoreChange,
   handlePenWinner,
   handleQuickPredictWin,
+  handleRandomizeMatch,
   selectedGroupFilter,
   setSelectedGroupFilter,
   selectedStageFilter,
@@ -84,6 +85,7 @@ export default function FixtureTab({
                 handleScoreChange={handleScoreChange}
                 handlePenWinner={handlePenWinner}
                 handleQuickPredictWin={handleQuickPredictWin}
+                handleRandomizeMatch={handleRandomizeMatch}
               />
             );
           })
