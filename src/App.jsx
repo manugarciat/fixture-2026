@@ -275,10 +275,10 @@ export default function App() {
   // Group standings calculation
   const groupStandings = useMemo(() => {
     const standings = {};
-    
+
     // Group definitions
     const GROUPS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
-    
+
     // Initialize teams for each group
     fixturesData.forEach(f => {
       if (f.group) {
@@ -297,15 +297,15 @@ export default function App() {
         if (matchScores && matchScores.home !== null && matchScores.away !== null) {
           const homeTeam = standings[f.group][f.home];
           const awayTeam = standings[f.group][f.away];
-          
+
           homeTeam.pld += 1;
           awayTeam.pld += 1;
-          
+
           homeTeam.gf += matchScores.home;
           homeTeam.ga += matchScores.away;
           awayTeam.gf += matchScores.away;
           awayTeam.ga += matchScores.home;
-          
+
           homeTeam.gd = homeTeam.gf - homeTeam.ga;
           awayTeam.gd = awayTeam.gf - awayTeam.ga;
 
@@ -428,12 +428,12 @@ export default function App() {
     const getMatchTeamName = (matchNum, side) => {
       const winnerSide = getMatchWinner(matchNum);
       if (!winnerSide) return null;
-      
+
       // We need to resolve who was playing in matchNum as home/away
       const fixture = fixturesData.find(f => f.num === matchNum);
       const homeName = getTeamName(fixture, 'home');
       const awayName = getTeamName(fixture, 'away');
-      
+
       if (side === 'winner') {
         return winnerSide === 'home' ? homeName : awayName;
       } else {
@@ -443,7 +443,7 @@ export default function App() {
 
     const getTeamName = (fixture, side) => {
       const rawName = side === 'home' ? fixture.home : fixture.away;
-      
+
       // Resolve placeholders dynamically
       if (fixture.stage === 'group-stage') {
         return rawName;
@@ -530,13 +530,13 @@ export default function App() {
         const city = f.city.toLowerCase();
         const groupLabel = f.group ? `grupo ${f.group.toLowerCase()}` : '';
         const stageLabel = STAGE_LABELS[f.stage].toLowerCase();
-        
+
         return homeResolved.includes(query) ||
-               awayResolved.includes(query) ||
-               stadium.includes(query) ||
-               city.includes(query) ||
-               groupLabel.includes(query) ||
-               stageLabel.includes(query);
+          awayResolved.includes(query) ||
+          stadium.includes(query) ||
+          city.includes(query) ||
+          groupLabel.includes(query) ||
+          stageLabel.includes(query);
       }
       return true;
     });
@@ -547,9 +547,9 @@ export default function App() {
     const code = TEAM_FLAGS[teamName];
     if (code) {
       return (
-        <img 
-          src={`https://flagcdn.com/w40/${code}.png`} 
-          alt={`Bandera de ${teamName}`} 
+        <img
+          src={`https://flagcdn.com/w40/${code}.png`}
+          alt={`Bandera de ${teamName}`}
           className={`${sizeClass} object-cover rounded shadow-sm`}
           loading="lazy"
         />
@@ -567,11 +567,10 @@ export default function App() {
     <div className="min-h-screen bg-[#0a0f1d] text-slate-100 font-sans pb-16">
       {/* Toast Notification */}
       {notification && (
-        <div className={`fixed bottom-6 right-6 z-50 flex items-center px-4 py-3 rounded-lg shadow-lg border backdrop-blur-md transition-all duration-300 ${
-          notification.type === 'error' 
-            ? 'bg-rose-950/80 border-rose-800 text-rose-200' 
-            : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
-        }`}>
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center px-4 py-3 rounded-lg shadow-lg border backdrop-blur-md transition-all duration-300 ${notification.type === 'error'
+          ? 'bg-rose-950/80 border-rose-800 text-rose-200'
+          : 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
+          }`}>
           <span className="font-medium text-sm">{notification.text}</span>
         </div>
       )}
@@ -580,7 +579,7 @@ export default function App() {
       <header className="relative overflow-hidden bg-gradient-to-b from-[#11182d] to-[#0a0f1d] border-b border-slate-800/80 px-4 py-8 md:py-12">
         <div className="absolute top-[-20%] left-[50%] translate-x-[-50%] w-[500px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute top-[10%] right-[10%] w-[250px] h-[250px] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none" />
-        
+
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-emerald-400 mb-4 select-none">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -598,25 +597,25 @@ export default function App() {
 
           {/* Quick Actions Panel */}
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
-            <button 
+            <button
               onClick={loadRealResults}
               className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
             >
               📅 Cargar Resultados Reales {lastRealMatchDate ? `(${lastRealMatchDate})` : ''}
             </button>
-            <button 
+            <button
               onClick={simulateRandomly}
               className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-purple-400 hover:bg-slate-800 transition duration-200 shadow-md flex items-center gap-2"
             >
               🎲 Simular Grupos Aleatoriamente
             </button>
-            <button 
+            <button
               onClick={sharePredictions}
               className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-50 font-bold transition duration-200 shadow-md shadow-emerald-950/20 flex items-center gap-2"
             >
               🔗 Compartir Pronósticos
             </button>
-            <button 
+            <button
               onClick={resetScores}
               className="px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-900 hover:text-rose-400 text-slate-400 hover:bg-rose-950/20 transition duration-200"
             >
@@ -628,46 +627,42 @@ export default function App() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 mt-8">
-        
+
         {/* Navigation Tabs */}
         <div className="flex border-b border-slate-800/80 mb-6 overflow-x-auto scrollbar-none gap-2">
-          <button 
+          <button
             onClick={() => setActiveTab('fixture')}
-            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${
-              activeTab === 'fixture' 
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5' 
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${activeTab === 'fixture'
+              ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
           >
             📅 Partidos & Fixture
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('groups')}
-            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${
-              activeTab === 'groups' 
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5' 
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${activeTab === 'groups'
+              ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
           >
             📊 Tablas de Grupos
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('thirds')}
-            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${
-              activeTab === 'thirds' 
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5' 
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${activeTab === 'thirds'
+              ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
           >
             🏅 Mejores Terceros
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('bracket')}
-            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${
-              activeTab === 'bracket' 
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5' 
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`py-3 px-4 font-semibold text-sm transition-all duration-200 border-b-2 whitespace-nowrap ${activeTab === 'bracket'
+              ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
           >
             🏆 Cuadro de Eliminatorias
           </button>
@@ -680,8 +675,8 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-slate-900/40 border border-slate-800 rounded-xl p-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Filtrar por Grupo</label>
-                <select 
-                  value={selectedGroupFilter} 
+                <select
+                  value={selectedGroupFilter}
                   onChange={(e) => setSelectedGroupFilter(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition"
                 >
@@ -691,11 +686,11 @@ export default function App() {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Filtrar por Ronda</label>
-                <select 
-                  value={selectedStageFilter} 
+                <select
+                  value={selectedStageFilter}
                   onChange={(e) => setSelectedStageFilter(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition"
                 >
@@ -708,8 +703,8 @@ export default function App() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Buscar Equipo / Ciudad</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Ej: Argentina, Seattle, Estadio..."
@@ -729,11 +724,10 @@ export default function App() {
                   const showPenaltiesInput = isKnockout && matchScores.home !== null && matchScores.away !== null && matchScores.home === matchScores.away;
 
                   return (
-                    <div 
-                      key={f.num} 
-                      className={`relative bg-slate-900/60 backdrop-blur-sm border rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition duration-200 ${
-                        isKnockout ? 'border-slate-800/80 shadow-purple-950/5 shadow-md' : 'border-slate-800'
-                      }`}
+                    <div
+                      key={f.num}
+                      className={`relative bg-slate-900/60 backdrop-blur-sm border rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition duration-200 ${isKnockout ? 'border-slate-800/80 shadow-purple-950/5 shadow-md' : 'border-slate-800'
+                        }`}
                     >
                       {/* Match header info */}
                       <div className="flex justify-between items-center text-xs text-slate-500 mb-3 border-b border-slate-800/60 pb-2">
@@ -758,8 +752,8 @@ export default function App() {
 
                         {/* Scores */}
                         <div className="col-span-2 flex items-center justify-center gap-1 select-none">
-                          <input 
-                            type="number" 
+                          <input
+                            type="number"
                             min="0"
                             max="99"
                             value={matchScores.home === null ? '' : matchScores.home}
@@ -768,8 +762,8 @@ export default function App() {
                             placeholder="-"
                           />
                           <span className="text-slate-600 font-bold text-xs">:</span>
-                          <input 
-                            type="number" 
+                          <input
+                            type="number"
                             min="0"
                             max="99"
                             value={matchScores.away === null ? '' : matchScores.away}
@@ -793,23 +787,21 @@ export default function App() {
                         <div className="mt-3 p-2 bg-purple-950/10 border border-purple-900/30 rounded-lg text-center">
                           <p className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider mb-2">Empate - Define quién avanza</p>
                           <div className="flex gap-2 justify-center">
-                            <button 
+                            <button
                               onClick={() => handlePenWinner(f.num, 'home')}
-                              className={`px-3 py-1 text-xs rounded border transition font-semibold ${
-                                matchScores.penWinner === 'home'
-                                  ? 'bg-purple-600/30 border-purple-500 text-purple-200'
-                                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                              }`}
+                              className={`px-3 py-1 text-xs rounded border transition font-semibold ${matchScores.penWinner === 'home'
+                                ? 'bg-purple-600/30 border-purple-500 text-purple-200'
+                                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                                }`}
                             >
                               ⚽ Avanza {homeResolvedName}
                             </button>
-                            <button 
+                            <button
                               onClick={() => handlePenWinner(f.num, 'away')}
-                              className={`px-3 py-1 text-xs rounded border transition font-semibold ${
-                                matchScores.penWinner === 'away'
-                                  ? 'bg-purple-600/30 border-purple-500 text-purple-200'
-                                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                              }`}
+                              className={`px-3 py-1 text-xs rounded border transition font-semibold ${matchScores.penWinner === 'away'
+                                ? 'bg-purple-600/30 border-purple-500 text-purple-200'
+                                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                                }`}
                             >
                               ⚽ Avanza {awayResolvedName}
                             </button>
@@ -838,8 +830,8 @@ export default function App() {
         {activeTab === 'groups' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(groupStandings).map(([groupLetter, teams]) => (
-              <div 
-                key={groupLetter} 
+              <div
+                key={groupLetter}
                 className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700/80 transition duration-200"
               >
                 <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-800">
@@ -848,7 +840,7 @@ export default function App() {
                     1ra y 2da Ronda
                   </span>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs text-left">
                     <thead>
@@ -865,26 +857,24 @@ export default function App() {
                       {teams.map((t, idx) => {
                         const isQualifying = idx < 2;
                         const isThird = idx === 2;
-                        
+
                         return (
-                          <tr 
+                          <tr
                             key={t.name}
-                            className={`border-b border-slate-800/30 hover:bg-slate-800/20 transition ${
-                              isQualifying 
-                                ? 'bg-emerald-950/5 text-slate-100' 
-                                : isThird 
-                                  ? 'bg-purple-950/5 text-slate-300' 
-                                  : 'text-slate-500'
-                            }`}
+                            className={`border-b border-slate-800/30 hover:bg-slate-800/20 transition ${isQualifying
+                              ? 'bg-emerald-950/5 text-slate-100'
+                              : isThird
+                                ? 'bg-purple-950/5 text-slate-300'
+                                : 'text-slate-500'
+                              }`}
                           >
                             <td className="py-2.5">
-                              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                                isQualifying 
-                                  ? 'bg-emerald-900/60 text-emerald-300' 
-                                  : isThird 
-                                    ? 'bg-purple-900/40 text-purple-300' 
-                                    : 'bg-slate-850 text-slate-600'
-                              }`}>
+                              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${isQualifying
+                                ? 'bg-emerald-900/60 text-emerald-300'
+                                : isThird
+                                  ? 'bg-purple-900/40 text-purple-300'
+                                  : 'bg-slate-850 text-slate-600'
+                                }`}>
                                 {idx + 1}
                               </span>
                             </td>
@@ -942,18 +932,16 @@ export default function App() {
                   {thirdPlaceRankings.map((t, idx) => {
                     const isAdvancing = idx < 8;
                     return (
-                      <tr 
+                      <tr
                         key={t.name}
-                        className={`border-b border-slate-800/40 hover:bg-slate-850/30 transition ${
-                          isAdvancing ? 'bg-emerald-950/5 text-slate-200' : 'text-slate-500 bg-rose-950/5'
-                        }`}
+                        className={`border-b border-slate-800/40 hover:bg-slate-850/30 transition ${isAdvancing ? 'bg-emerald-950/5 text-slate-200' : 'text-slate-500 bg-rose-950/5'
+                          }`}
                       >
                         <td className="py-3 font-bold">
-                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                            isAdvancing 
-                              ? 'bg-emerald-900/60 text-emerald-300' 
-                              : 'bg-rose-950 border border-rose-800 text-rose-300'
-                          }`}>
+                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${isAdvancing
+                            ? 'bg-emerald-900/60 text-emerald-300'
+                            : 'bg-rose-950 border border-rose-800 text-rose-300'
+                            }`}>
                             {idx + 1}
                           </span>
                         </td>
@@ -971,11 +959,10 @@ export default function App() {
                         </td>
                         <td className="py-3 text-center text-slate-400">{t.gf}</td>
                         <td className="py-3 text-right">
-                          <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${
-                            isAdvancing 
-                              ? 'bg-emerald-950/80 border border-emerald-800/80 text-emerald-400' 
-                              : 'bg-rose-950/80 border border-rose-800/80 text-rose-400'
-                          }`}>
+                          <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${isAdvancing
+                            ? 'bg-emerald-950/80 border border-emerald-800/80 text-emerald-400'
+                            : 'bg-rose-950/80 border border-rose-800/80 text-rose-400'
+                            }`}>
                             {isAdvancing ? 'Avanza' : 'Eliminado'}
                           </span>
                         </td>
@@ -991,7 +978,7 @@ export default function App() {
         {/* TAB 4: BRACKET */}
         {activeTab === 'bracket' && (
           <div className="flex flex-col gap-8 overflow-x-auto pb-8 scrollbar-thin">
-            
+
             {/* Quick Helper */}
             <div className="bg-purple-950/10 border border-purple-900/30 rounded-xl p-4 max-w-2xl mx-auto text-center">
               <h4 className="text-purple-300 font-bold text-sm mb-1">Simulación del Cuadro</h4>
@@ -1002,7 +989,7 @@ export default function App() {
 
             {/* Bracket Flow columns */}
             <div className="min-w-[1200px] grid grid-cols-5 gap-4 mt-6">
-              
+
               {/* ROUND OF 32 */}
               <div className="flex flex-col justify-around gap-4">
                 <div className="text-center font-bold text-xs uppercase tracking-wider text-slate-500 mb-2 border-b border-slate-800 pb-1">
@@ -1022,15 +1009,15 @@ export default function App() {
                         <span>Partido {num}</span>
                         <span>{f.city.toUpperCase().replace('-', ' ')}</span>
                       </div>
-                      
+
                       {/* Home */}
                       <div className={`flex items-center justify-between p-1 rounded ${winnerSide === 'home' ? 'bg-emerald-950/20 text-emerald-300 font-semibold' : ''}`}>
                         <div className="flex items-center gap-1.5 truncate max-w-[80%]">
                           {renderFlag(h, "w-4 h-3")}
                           <span className="truncate">{h}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.home === null ? '' : s.home}
                           onChange={(e) => handleScoreChange(num, 'home', e.target.value)}
@@ -1045,8 +1032,8 @@ export default function App() {
                           {renderFlag(a, "w-4 h-3")}
                           <span className="truncate">{a}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.away === null ? '' : s.away}
                           onChange={(e) => handleScoreChange(num, 'away', e.target.value)}
@@ -1089,15 +1076,15 @@ export default function App() {
                         <span>Partido {num}</span>
                         <span>{f.city.toUpperCase().replace('-', ' ')}</span>
                       </div>
-                      
+
                       {/* Home */}
                       <div className={`flex items-center justify-between p-1 rounded ${winnerSide === 'home' ? 'bg-emerald-950/20 text-emerald-300 font-semibold' : ''}`}>
                         <div className="flex items-center gap-1.5 truncate max-w-[80%]">
                           {renderFlag(h, "w-4 h-3")}
                           <span className="truncate">{h || `Ganador Match ${f.home.split('Match ')[1]}`}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.home === null ? '' : s.home}
                           onChange={(e) => handleScoreChange(num, 'home', e.target.value)}
@@ -1112,8 +1099,8 @@ export default function App() {
                           {renderFlag(a, "w-4 h-3")}
                           <span className="truncate">{a || `Ganador Match ${f.away.split('Match ')[1]}`}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.away === null ? '' : s.away}
                           onChange={(e) => handleScoreChange(num, 'away', e.target.value)}
@@ -1156,15 +1143,15 @@ export default function App() {
                         <span>Partido {num}</span>
                         <span>{f.city.toUpperCase().replace('-', ' ')}</span>
                       </div>
-                      
+
                       {/* Home */}
                       <div className={`flex items-center justify-between p-1 rounded ${winnerSide === 'home' ? 'bg-emerald-950/20 text-emerald-300 font-semibold' : ''}`}>
                         <div className="flex items-center gap-1.5 truncate max-w-[80%]">
                           {renderFlag(h, "w-4 h-3")}
                           <span className="truncate">{h || `Ganador Match ${f.home.split('Match ')[1]}`}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.home === null ? '' : s.home}
                           onChange={(e) => handleScoreChange(num, 'home', e.target.value)}
@@ -1179,8 +1166,8 @@ export default function App() {
                           {renderFlag(a, "w-4 h-3")}
                           <span className="truncate">{a || `Ganador Match ${f.away.split('Match ')[1]}`}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.away === null ? '' : s.away}
                           onChange={(e) => handleScoreChange(num, 'away', e.target.value)}
@@ -1223,15 +1210,15 @@ export default function App() {
                         <span>Partido {num}</span>
                         <span>{f.city.toUpperCase().replace('-', ' ')}</span>
                       </div>
-                      
+
                       {/* Home */}
                       <div className={`flex items-center justify-between p-1 rounded ${winnerSide === 'home' ? 'bg-emerald-950/20 text-emerald-300 font-semibold' : ''}`}>
                         <div className="flex items-center gap-1.5 truncate max-w-[80%]">
                           {renderFlag(h, "w-4 h-3")}
                           <span className="truncate">{h || `Ganador Match ${f.home.split('Match ')[1]}`}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.home === null ? '' : s.home}
                           onChange={(e) => handleScoreChange(num, 'home', e.target.value)}
@@ -1246,8 +1233,8 @@ export default function App() {
                           {renderFlag(a, "w-4 h-3")}
                           <span className="truncate">{a || `Ganador Match ${f.away.split('Match ')[1]}`}</span>
                         </div>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           min="0"
                           value={s.away === null ? '' : s.away}
                           onChange={(e) => handleScoreChange(num, 'away', e.target.value)}
@@ -1273,7 +1260,7 @@ export default function App() {
 
               {/* FINAL & 3RD PLACE */}
               <div className="flex flex-col justify-around gap-12">
-                
+
                 {/* FINAL */}
                 <div>
                   <div className="text-center font-bold text-xs uppercase tracking-wider text-amber-500 mb-2 border-b border-slate-800 pb-1">
@@ -1294,15 +1281,15 @@ export default function App() {
                           <span>Partido 104 - FINAL</span>
                           <span>{f.city.toUpperCase().replace('-', ' ')}</span>
                         </div>
-                        
+
                         {/* Home */}
                         <div className={`flex items-center justify-between p-1.5 rounded ${winnerSide === 'home' ? 'bg-amber-500/10 text-amber-300 font-bold' : ''}`}>
                           <div className="flex items-center gap-1.5 truncate max-w-[80%]">
                             {renderFlag(h, "w-5 h-3.5")}
                             <span className="truncate font-semibold text-sm">{h || `Ganador Match ${f.home.split('Match ')[1]}`}</span>
                           </div>
-                          <input 
-                            type="number" 
+                          <input
+                            type="number"
                             min="0"
                             value={s.home === null ? '' : s.home}
                             onChange={(e) => handleScoreChange(num, 'home', e.target.value)}
@@ -1317,8 +1304,8 @@ export default function App() {
                             {renderFlag(a, "w-5 h-3.5")}
                             <span className="truncate font-semibold text-sm">{a || `Ganador Match ${f.away.split('Match ')[1]}`}</span>
                           </div>
-                          <input 
-                            type="number" 
+                          <input
+                            type="number"
                             min="0"
                             value={s.away === null ? '' : s.away}
                             onChange={(e) => handleScoreChange(num, 'away', e.target.value)}
@@ -1371,15 +1358,15 @@ export default function App() {
                           <span>Partido 103</span>
                           <span>{f.city.toUpperCase().replace('-', ' ')}</span>
                         </div>
-                        
+
                         {/* Home */}
                         <div className={`flex items-center justify-between p-1 rounded ${winnerSide === 'home' ? 'bg-amber-900/10 text-amber-300 font-semibold' : ''}`}>
                           <div className="flex items-center gap-1.5 truncate max-w-[80%]">
                             {renderFlag(h, "w-4 h-3")}
                             <span className="truncate">{h || `Perdedor Match ${f.home.split('Match ')[1]}`}</span>
                           </div>
-                          <input 
-                            type="number" 
+                          <input
+                            type="number"
                             min="0"
                             value={s.home === null ? '' : s.home}
                             onChange={(e) => handleScoreChange(num, 'home', e.target.value)}
@@ -1394,8 +1381,8 @@ export default function App() {
                             {renderFlag(a, "w-4 h-3")}
                             <span className="truncate">{a || `Perdedor Match ${f.away.split('Match ')[1]}`}</span>
                           </div>
-                          <input 
-                            type="number" 
+                          <input
+                            type="number"
                             min="0"
                             value={s.away === null ? '' : s.away}
                             onChange={(e) => handleScoreChange(num, 'away', e.target.value)}
@@ -1430,7 +1417,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="max-w-6xl mx-auto text-center text-slate-600 text-xs mt-16 pt-8 border-t border-slate-900">
-        <p>© 2026 Fixture & Simulador del Mundial de Fútbol 2026. Todos los derechos reservados.</p>
+        <p>© 2026 Fixture & Simulador del Mundial de Fútbol 2026. Hecho por <a href="https://github.com/manugarciat" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 hover:underline transition">@manugarciat</a> con ayuda de Gemini.</p>
         <p className="mt-1">
           Las banderas se obtienen mediante FlagCDN. Los emparejamientos dinámicos de terceros cumplen rigurosamente el reglamento del Anexo C de la FIFA.
         </p>
