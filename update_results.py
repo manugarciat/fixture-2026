@@ -2,8 +2,16 @@ import json
 import re
 import urllib.request
 import os
+import datetime
 
 def update_real_results():
+    # El mundial de 2026 termina el 19 de Julio.
+    # Evitamos que el script corra después del 20 de Julio de 2026.
+    limit_date = datetime.date(2026, 7, 20)
+    if datetime.date.today() > limit_date:
+        print("La Copa Mundial 2026 ha finalizado. El script de actualización automática está desactivado.")
+        return
+
     url = "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     req = urllib.request.Request(url, headers=headers)
