@@ -3,8 +3,9 @@ name: Desplegar en GitHub Pages
 on:
   push:
     branches:
-      - main # O master, según tu rama principal
+      - main
   workflow_dispatch:
+  workflow_call: # Permite que este flujo sea llamado desde otro workflow
 
 # Permisos requeridos para desplegar en GitHub Pages
 permissions:
