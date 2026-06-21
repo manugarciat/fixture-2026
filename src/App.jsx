@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import fixturesData from './data/fixtures.json';
 import thirdPlaceMapping from './data/third_place_mapping.json';
-import fallbackRealResults from '../public/real_results.json';
+import fallbackRealResults from './data/real_results.json';
 import './App.css';
 
 import { STAGE_LABELS } from './constants';
