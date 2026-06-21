@@ -30,7 +30,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add src/data/real_results.json
+          git add public/real_results.json
           if git diff --quiet && git diff --staged --quiet; then
             echo "No changes to commit"
             echo "updated=false" >> $GITHUB_OUTPUT

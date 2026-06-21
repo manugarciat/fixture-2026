@@ -26,7 +26,7 @@ def update_real_results():
 
     # Paths relative to the project root
     fixtures_path = os.path.join("src", "data", "fixtures.json")
-    results_path = os.path.join("src", "data", "real_results.json")
+    results_path = os.path.join("public", "real_results.json")
 
     if not os.path.exists(fixtures_path):
         print(f"Fixtures file not found at {fixtures_path}")

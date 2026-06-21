@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import fixturesData from './data/fixtures.json';
 import thirdPlaceMapping from './data/third_place_mapping.json';
-import realResults from './data/real_results.json';
+import fallbackRealResults from '../public/real_results.json';
 import './App.css';
 
 import { STAGE_LABELS } from './constants';
@@ -20,6 +20,8 @@ import ThirdsTab from './components/ThirdsTab';
 import BracketTab from './components/BracketTab';
 
 export default function App() {
+  const [realResults, setRealResults] = useState(fallbackRealResults);
+
   const [scores, setScores] = useState(() => {
     // 1. Try URL parameters first
     const params = new URLSearchParams(window.location.search);
@@ -43,7 +45,7 @@ export default function App() {
     // 3. Fallback: load real results by default
     const initial = {};
     for (let i = 1; i <= 104; i++) {
-      const real = realResults[i];
+      const real = fallbackRealResults[i];
       if (real) {
         initial[i] = { home: real[0], away: real[1], penWinner: null };
       } else {
@@ -58,6 +60,36 @@ export default function App() {
   const [selectedStageFilter, setSelectedStageFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [notification, setNotification] = useState(null);
+
+  // Fetch the latest real results from the server with a cache-buster query parameter
+  useEffect(() => {
+    fetch(`./real_results.json?t=${Date.now()}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch latest results');
+        return res.json();
+      })
+      .then(data => {
+        setRealResults(data);
+        console.log('Successfully fetched latest real results from server:', data);
+        
+        // Auto-merge newly played real results if they are currently null in the state
+        setScores(prev => {
+          let updated = false;
+          const next = { ...prev };
+          for (let [numStr, score] of Object.entries(data)) {
+            const num = parseInt(numStr, 10);
+            if (next[num] && next[num].home === null && next[num].away === null) {
+              next[num] = { home: score[0], away: score[1], penWinner: null };
+              updated = true;
+            }
+          }
+          return updated ? next : prev;
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching latest real results, using fallback:', err);
+      });
+  }, []);
 
   // Sync to localStorage
   useEffect(() => {
@@ -119,7 +151,7 @@ export default function App() {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const monthName = months[parseInt(month, 10) - 1];
     return `${parseInt(day, 10)} de ${monthName}`;
-  }, []);
+  }, [realResults]);
 
   const loadRealResults = () => {
     const dateStr = lastRealMatchDate ? ` hasta el ${lastRealMatchDate}` : '';
