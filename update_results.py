@@ -99,10 +99,14 @@ def update_real_results():
                 away_score = int(score_match.group(2))
                 
                 # Extract date
-                fdate_m = re.search(r'<div class="fdate">([^<]+)', p, re.S)
                 date_str = None
-                if fdate_m:
-                    date_str = normalize_date_text(fdate_m.group(1))
+                bday_m = re.search(r'class="[^"]*bday[^"]*">([^<]+)', p)
+                if bday_m:
+                    date_str = bday_m.group(1).strip()
+                else:
+                    fdate_m = re.search(r'<div class="fdate">(.*?)</div>', p, re.S)
+                    if fdate_m:
+                        date_str = normalize_date_text(fdate_m.group(1))
                 
                 # Extract stadium
                 fright_m = re.search(r'<div class="fright">(.*?)</div>', p, re.S)
