@@ -12,17 +12,11 @@ def update_real_results():
         print("La Copa Mundial 2026 ha finalizado. El script de actualización automática está desactivado.")
         return
 
-    url = "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup"
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-    req = urllib.request.Request(url, headers=headers)
+    urls = ["https://en.wikipedia.org/wiki/2026_FIFA_World_Cup"]
+    for g in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']:
+        urls.append(f"https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_{g}")
 
-    print("Downloading latest Wikipedia match data...")
-    try:
-        with urllib.request.urlopen(req) as response:
-            html = response.read().decode('utf-8')
-    except Exception as e:
-        print(f"Error downloading page: {e}")
-        return
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
 
     # Paths relative to the project root
     fixtures_path = os.path.join("src", "data", "fixtures.json")
@@ -78,61 +72,71 @@ def update_real_results():
 
     score_pattern = re.compile(r'<th class="fscore"[^>]*>(.*?)</th>', re.S)
 
-    parts = html.split('class="footballbox"')
-    print(f"Found {len(parts) - 1} match boxes on Wikipedia.")
-
     played_results = {}
 
-    for p in parts[1:]:
-        score_m = score_pattern.search(p)
-        if score_m:
-            score_text_raw = score_m.group(1)
-            score_text = re.sub(r'<[^>]*>', '', score_text_raw).strip()
-            score_text_clean = re.sub(r'\(.*?\)', '', score_text).strip()
-            score_text_clean = score_text_clean.replace("&#160;", " ").replace("&nbsp;", " ")
-            score_text_clean = re.sub(r'\s+', ' ', score_text_clean).strip()
-            
-            # Check if score_text is a valid score (e.g. "2–0" or "2-0")
-            score_match = re.match(r'^(\d+)\s*[\u2013-]\s*(\d+)$', score_text_clean)
-            if score_match:
-                home_score = int(score_match.group(1))
-                away_score = int(score_match.group(2))
+    for url in urls:
+        print(f"Downloading {url}...")
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req) as response:
+                html = response.read().decode('utf-8')
+        except Exception as e:
+            print(f"Error downloading page {url}: {e}")
+            continue
+
+        parts = html.split('class="footballbox"')
+        print(f"Found {len(parts) - 1} match boxes on Wikipedia page.")
+
+        for p in parts[1:]:
+            score_m = score_pattern.search(p)
+            if score_m:
+                score_text_raw = score_m.group(1)
+                score_text = re.sub(r'<[^>]*>', '', score_text_raw).strip()
+                score_text_clean = re.sub(r'\(.*?\)', '', score_text).strip()
+                score_text_clean = score_text_clean.replace("&#160;", " ").replace("&nbsp;", " ")
+                score_text_clean = re.sub(r'\s+', ' ', score_text_clean).strip()
                 
-                # Extract date
-                date_str = None
-                bday_m = re.search(r'class="[^"]*bday[^"]*">([^<]+)', p)
-                if bday_m:
-                    date_str = bday_m.group(1).strip()
-                else:
-                    fdate_m = re.search(r'<div class="fdate">(.*?)</div>', p, re.S)
-                    if fdate_m:
-                        date_str = normalize_date_text(fdate_m.group(1))
-                
-                # Extract stadium
-                fright_m = re.search(r'<div class="fright">(.*?)</div>', p, re.S)
-                stadium_str = None
-                if fright_m:
-                    fright_text = re.sub(r'<[^>]*>', '', fright_m.group(1)).strip()
-                    parts_fright = fright_text.split(',')
-                    stadium_str = normalize_stadium_name(parts_fright[0])
-                
-                # Find matching fixture by date and stadium
-                if date_str and stadium_str:
-                    for f in fixtures:
-                        f_date = f["date"]
-                        f_stadium = normalize_stadium_name(f["stadium"])
-                        if f_date == date_str and f_stadium == stadium_str:
-                            match_num = f["num"]
-                            
-                            # Check if there is a penalty shootout score in the box
-                            pen_m = re.search(r'<tr class="fgoals">.*?<th>(\d+)\s*[\u2013-]\s*(\d+)</th>', p, re.S)
-                            if pen_m:
-                                pen_home = int(pen_m.group(1))
-                                pen_away = int(pen_m.group(2))
-                                played_results[str(match_num)] = [home_score, away_score, pen_home, pen_away]
-                            else:
-                                played_results[str(match_num)] = [home_score, away_score]
-                            break
+                # Check if score_text is a valid score (e.g. "2–0" or "2-0")
+                score_match = re.match(r'^(\d+)\s*[\u2013-]\s*(\d+)$', score_text_clean)
+                if score_match:
+                    home_score = int(score_match.group(1))
+                    away_score = int(score_match.group(2))
+                    
+                    # Extract date
+                    date_str = None
+                    bday_m = re.search(r'class="[^"]*bday[^"]*">([^<]+)', p)
+                    if bday_m:
+                        date_str = bday_m.group(1).strip()
+                    else:
+                        fdate_m = re.search(r'<div class="fdate">(.*?)</div>', p, re.S)
+                        if fdate_m:
+                            date_str = normalize_date_text(fdate_m.group(1))
+                    
+                    # Extract stadium
+                    fright_m = re.search(r'<div class="fright">(.*?)</div>', p, re.S)
+                    stadium_str = None
+                    if fright_m:
+                        fright_text = re.sub(r'<[^>]*>', '', fright_m.group(1)).strip()
+                        parts_fright = fright_text.split(',')
+                        stadium_str = normalize_stadium_name(parts_fright[0])
+                    
+                    # Find matching fixture by date and stadium
+                    if date_str and stadium_str:
+                        for f in fixtures:
+                            f_date = f["date"]
+                            f_stadium = normalize_stadium_name(f["stadium"])
+                            if f_date == date_str and f_stadium == stadium_str:
+                                match_num = f["num"]
+                                
+                                # Check if there is a penalty shootout score in the box
+                                pen_m = re.search(r'<tr class="fgoals">.*?<th>(\d+)\s*[\u2013-]\s*(\d+)</th>', p, re.S)
+                                if pen_m:
+                                    pen_home = int(pen_m.group(1))
+                                    pen_away = int(pen_m.group(2))
+                                    played_results[str(match_num)] = [home_score, away_score, pen_home, pen_away]
+                                else:
+                                    played_results[str(match_num)] = [home_score, away_score]
+                                break
 
     print(f"Extracted {len(played_results)} played matches with scores.")
     
